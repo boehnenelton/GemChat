@@ -1,0 +1,1700 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- SEO and Metadata Placeholder Tags -->
+    <meta name="description" content="A powerful Gemini AI chat application with features for sending text, files, and images, managing debug files, saving formatted output, and tracking conversation transcripts.">
+    <meta name="keywords" content="Gemini Chat, AI chat, Gemini AI, file send, image send, debug file, formatted save, conversation transcript, web app, modern, sleek, minimalistic, HTML5, CSS, JavaScript">
+    <meta name="author" content="Boehnen Elton">
+    <meta property="og:title" content="Gemini Chat - AI Assistant">
+    <meta property="og:description" content="A powerful Gemini AI chat application with features for sending text, files, and images, managing debug files, saving formatted output, and tracking conversation transcripts.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://www.example.com">
+    <meta property="og:image" content="https://placehold.co/1200x630/000000/FFFFFF?text=Gemini+Chat+Preview">
+    <link rel="canonical" href="https://www.example.com">
+
+    <title>Gemini Chat</title>
+
+    <!-- Google Fonts - Inter for general text, Montserrat for headings (example) -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700&family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* Global Styles */
+        :root {
+            --header-height: 60px; /* 2 rows * 30px/row */
+            --footer-height: 30px; /* 1 row * 30px/row */
+            --button-height: 28px;
+            --row-height: 30px;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Inter', sans-serif;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            background-color: #f8f8f8; /* Light gray background for body */
+            color: #333; /* Dark gray font for body */
+        }
+
+        /* Header Styles */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: var(--header-height);
+            background-color: #000;
+            color: #fff;
+            padding: 0 20px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            position: sticky; /* Dock to top */
+            top: 0;
+            z-index: 1000;
+        }
+
+        .header-left .app-name {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.8em;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .header-right a {
+            color: #fff;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .header-right a:hover {
+            color: #aaa;
+        }
+
+        .settings-button {
+            background-color: #fff;
+            color: #000;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
+            height: var(--button-height);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .settings-button:hover {
+            background-color: #eee;
+            transform: translateY(-1px);
+        }
+
+        /* Main Content Area */
+        .main-content {
+            flex-grow: 1;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        /* Tab Navigation */
+        .tab-nav {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #eee;
+        }
+
+        .tab-button {
+            background-color: transparent;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            font-size: 1em;
+            font-weight: 500;
+            color: #555;
+            transition: color 0.3s ease, border-bottom 0.3s ease;
+            border-bottom: 2px solid transparent;
+        }
+
+        .tab-button.active {
+            color: #000;
+            border-bottom: 2px solid #000;
+            font-weight: 600;
+        }
+
+        .tab-button:hover:not(.active) {
+            color: #000;
+        }
+
+        /* Tab Content */
+        .tab-content {
+            display: none;
+            padding: 20px 0;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            min-height: 200px; /* Ensure some height for content */
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .tab-content h2 {
+            font-family: 'Montserrat', sans-serif;
+            color: #000;
+            margin-top: 0;
+            padding-left: 20px;
+        }
+
+        .tab-content p {
+            padding-left: 20px;
+            line-height: 1.6;
+        }
+
+        /* Textarea specific styles */
+        textarea {
+            width: calc(100% - 40px); /* Full width minus padding */
+            padding: 10px;
+            margin: 0 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-family: 'Inter', sans-serif;
+            font-size: 1em;
+            resize: vertical; /* Allow vertical resizing */
+            box-sizing: border-box; /* Include padding in width */
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #000;
+            box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Transcript specific styles */
+        #transcriptOutput {
+            white-space: pre-wrap; /* Preserve whitespace and wrap text */
+            word-wrap: break-word; /* Break long words */
+            height: 400px; /* Fixed height for transcript */
+            overflow-y: auto; /* Scroll if content overflows */
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 10px;
+            margin: 0 20px;
+            background-color: #f9f9f9;
+            font-size: 0.95em;
+            line-height: 1.5;
+        }
+
+        #transcriptOutput img {
+            max-width: 100%; /* Ensure images fit within the transcript area */
+            height: auto;
+            border-radius: 5px;
+            margin: 5px 0;
+            display: block; /* Prevent extra space below image */
+        }
+
+        /* Segmented Output specific styles */
+        #segmentedOutput {
+            padding: 10px;
+            margin: 0 20px;
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            max-height: 600px; /* Max height for segmented output */
+            overflow-y: auto; /* Scroll if content overflows */
+        }
+
+        #segmentedOutput h3 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.1em;
+            color: #000;
+            margin-top: 15px;
+            margin-bottom: 5px;
+        }
+
+        #segmentedOutput pre {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            background-color: #fff;
+            border: 1px solid #eee;
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 0.9em;
+            line-height: 1.4;
+        }
+
+        #segmentedOutput hr {
+            border: none;
+            border-top: 1px dashed #ccc;
+            margin: 20px 0;
+        }
+
+
+        /* Button Panel Section */
+        .button-panel-section {
+            margin-top: 30px;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .button-panel-section h2 {
+            font-family: 'Montserrat', sans-serif;
+            color: #000;
+            margin-top: 0;
+            margin-bottom: 20px;
+        }
+
+        .button-container {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center; /* Align items vertically */
+            gap: 15px;
+        }
+
+        .panel-button {
+            background-color: #000; /* Changed to black */
+            color: #fff; /* Changed to white */
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            font-weight: 500;
+            height: var(--button-height);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.3s ease, transform 0.2s ease, color 0.3s ease; /* Added color transition */
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .panel-button:hover {
+            background-color: #fff; /* Changed to white */
+            color: #000; /* Changed to black */
+            transform: translateY(-1px);
+        }
+
+        /* Loading indicator */
+        .loading-indicator {
+            display: none; /* Hidden by default */
+            margin-left: 15px;
+            font-style: italic;
+            color: #555;
+        }
+
+        /* Control group styles (for format and model selects) */
+        .control-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+            width: 100%;
+            flex-wrap: wrap; /* Allow wrapping on smaller screens */
+        }
+
+        .control-group label {
+            font-weight: 500;
+            color: #333;
+        }
+
+        .control-group select {
+            padding: 8px 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-family: 'Inter', sans-serif;
+            font-size: 1em;
+            background-color: #fff;
+            cursor: pointer;
+            min-width: 150px;
+        }
+
+        .control-group select:focus {
+            outline: none;
+            border-color: #000;
+            box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Debug controls styles */
+        .debug-controls, .file-send-controls, .image-send-controls, .transcript-controls, .segment-controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 15px; /* Space above */
+            padding-left: 5px; /* Slight indent to align with label */
+            flex-wrap: wrap; /* Allow wrapping on smaller screens */
+        }
+
+        .debug-controls label, .file-send-controls label, .image-send-controls label, .transcript-controls label, .segment-controls label {
+            font-weight: 500;
+            color: #333;
+        }
+
+        .debug-controls input[type="checkbox"],
+        .file-send-controls input[type="checkbox"],
+        .image-send-controls input[type="checkbox"],
+        .transcript-controls input[type="checkbox"],
+        .segment-controls input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        .debug-file-info, .file-info, .image-info, .transcript-info, .segment-info {
+            font-size: 0.9em;
+            color: #666;
+            margin-left: 10px;
+        }
+
+        /* Style for disabled button */
+        .panel-button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+            color: #666;
+            box-shadow: none;
+            transform: none;
+        }
+
+        .panel-button:disabled:hover {
+            background-color: #ccc;
+            color: #666;
+        }
+
+        /* Footer Styles */
+        .footer {
+            display: flex;
+            justify-content: space-between; /* Changed to space-between to push content to ends */
+            align-items: center;
+            height: var(--footer-height);
+            background-color: #000;
+            color: #fff;
+            padding: 0 20px;
+            font-size: 0.9em;
+            box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.2);
+            position: sticky; /* Dock to bottom */
+            bottom: 0;
+            z-index: 1000;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 15px;
+        }
+
+        .footer-links a {
+            color: #fff;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .footer-links a:hover {
+            color: #aaa;
+        }
+
+
+        /* Overlay Panel Styles */
+        .overlay-panel {
+            display: none; /* Hidden by default */
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7); /* Semi-transparent black overlay */
+            z-index: 2000; /* Above everything */
+            justify-content: center;
+            align-items: center;
+        }
+
+        .overlay-content {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 700px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .overlay-close-button {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: none;
+            border: none;
+            font-size: 1.8em;
+            cursor: pointer;
+            color: #555;
+            transition: color 0.3s ease;
+        }
+
+        .overlay-close-button:hover {
+            color: #000;
+        }
+
+        .overlay-tab-nav {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #eee;
+        }
+
+        .overlay-tab-button {
+            background-color: transparent;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            font-size: 1em;
+            font-weight: 500;
+            color: #555;
+            transition: color 0.3s ease, border-bottom 0.3s ease;
+            border-bottom: 2px solid transparent;
+        }
+
+        .overlay-tab-button.active {
+            color: #000;
+            border-bottom: 2px solid #000;
+            font-weight: 600;
+        }
+
+        .overlay-tab-button:hover:not(.active) {
+            color: #000;
+        }
+
+        .overlay-tab-content {
+            display: none;
+            padding: 20px 0;
+            min-height: 150px;
+        }
+
+        .overlay-tab-content.active {
+            display: block;
+        }
+
+        .overlay-tab-content h3 { /* Changed from h2 to h3 for settings tabs */
+            font-family: 'Montserrat', sans-serif;
+            color: #000;
+            margin-top: 0;
+        }
+
+        /* Mobile Responsiveness */
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                height: auto;
+                padding: 10px 20px;
+            }
+
+            .header-left, .header-right {
+                width: 100%;
+                justify-content: center;
+                margin-bottom: 10px;
+            }
+
+            .header-right {
+                flex-wrap: wrap;
+                gap: 10px;
+                margin-bottom: 0;
+            }
+
+            .tab-nav, .overlay-tab-nav {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .tab-button, .overlay-tab-button {
+                flex-basis: 48%; /* Two buttons per row */
+                margin-bottom: 5px;
+            }
+
+            .main-content {
+                padding: 10px;
+            }
+
+            .overlay-content {
+                width: 95%;
+                padding: 20px;
+            }
+
+            .button-container {
+                flex-direction: column;
+            }
+
+            .panel-button {
+                width: 100%;
+            }
+
+            .control-group {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .control-group select {
+                width: 100%;
+            }
+
+            .debug-controls, .file-send-controls, .image-send-controls, .transcript-controls, .segment-controls {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+
+        /* Status Message Styles */
+        .status-message {
+            background-color: #e0ffe0; /* Light green */
+            color: #006400; /* Dark green */
+            border: 1px solid #006400;
+            padding: 10px 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: 500;
+            display: none; /* Hidden by default */
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+        }
+
+        .status-message.show {
+            display: block;
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header Section -->
+    <header class="header">
+        <div class="header-left">
+            <span class="app-name">Gemini Chat</span>
+        </div>
+        <div class="header-right">
+            <a href="mailto:boehnenelton2024@gmail.com" target="_blank">Contact</a>
+            <a href="https://github.com/boehnenelton" target="_blank">Github</a>
+            <button class="settings-button" id="settingsButton">Settings</button>
+        </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+        <!-- Status Message Display -->
+        <div id="statusMessage" class="status-message"></div>
+
+        <!-- Tab Navigation -->
+        <nav class="tab-nav">
+            <button class="tab-button active" data-tab="tab1">Query</button>
+            <button class="tab-button" data-tab="tab2">Response</button>
+            <button class="tab-button" data-tab="tab3">Transcript</button>
+            <button class="tab-button" data-tab="tab4">Segmented</button> <!-- New Tab -->
+        </nav>
+
+        <!-- Tab Content Sections -->
+        <section id="tab1" class="tab-content active">
+            <h2>Query</h2>
+            <textarea id="queryInput" rows="4" placeholder="Enter your query here..."></textarea>
+        </section>
+        <section id="tab2" class="tab-content">
+            <h2>Response</h2>
+            <textarea id="responseOutput" rows="10" readonly placeholder="Gemini's response will appear here..."></textarea>
+        </section>
+        <section id="tab3" class="tab-content">
+            <h2>Transcript</h2>
+            <div id="transcriptOutput"></div>
+        </section>
+        <section id="tab4" class="tab-content"> <!-- New Tab Content -->
+            <h2>Segmented Replies</h2>
+            <div id="segmentedOutput"></div>
+        </section>
+
+        <!-- Button and Quick Configuration Panel Section -->
+        <section class="button-panel-section">
+            <h2>Quick Configuration</h2>
+            <div class="control-group">
+                <label for="formatSelect">Format:</label>
+                <select id="formatSelect">
+                    <option value="default" selected>Default</option>
+                    <option value="document">Document</option>
+                    <option value="debug">Debug</option>
+                    <option value="bash">Bash</option>
+                    <option value="cmd">CMD</option>
+                    <option value="powershell">Powershell</option>
+                    <option value="python">Python</option>
+                    <option value="javascript">Javascript</option>
+                    <option value="css">CSS</option>
+                    <option value="html5">Html5</option>
+                </select>
+                <button class="panel-button" id="formattedSaveButton">Formatted Save</button>
+            </div>
+            <div class="control-group">
+                <label for="modelSelect">Gemini Model:</label>
+                <select id="modelSelect">
+                    <option value="gemini-2.0-flash" selected>gemini-2.0-flash</option>
+                    <option value="gemini-2.0-pro">gemini-2.0-pro</option>
+                </select>
+            </div>
+            <div class="button-container">
+                <button class="panel-button" id="sendButton">Send</button>
+                <span id="loadingIndicator" class="loading-indicator">Generating response...</span>
+                <button class="panel-button" id="saveOutputButton">Save Output</button>
+                <button class="panel-button" id="saveTranscriptButton">Save Transcript</button>
+                <button class="panel-button" id="copyResponseButton">Copy Response</button>
+                <button class="panel-button" id="clearTranscriptButton">Clear Transcript</button>
+            </div>
+            <div class="debug-controls">
+                <input type="checkbox" id="debugModeCheckbox">
+                <label for="debugModeCheckbox">Debug File</label>
+                <button class="panel-button" id="setDebugFileButton" disabled>Set Debug File</button>
+                <button class="panel-button" id="backupDebugFileButton" disabled>Backup File</button>
+                <button class="panel-button" id="saveDebugFileButton" disabled>Save Debug File</button>
+                <span id="debugFileInfo" class="debug-file-info">No debug file selected.</span>
+                <input type="file" id="debugFileInput" style="display: none;"> <!-- Hidden file input -->
+            </div>
+            <div class="file-send-controls">
+                <input type="checkbox" id="sendFileCheckbox">
+                <label for="sendFileCheckbox">Send File</label>
+                <button class="panel-button" id="selectFileButton" disabled>Select File</button>
+                <span id="fileInfo" class="file-info">No file selected.</span>
+                <input type="file" id="generalFileInput" style="display: none;"> <!-- Hidden general file input -->
+            </div>
+            <div class="image-send-controls">
+                <input type="checkbox" id="sendImageCheckbox">
+                <label for="sendImageCheckbox">Send Image</label>
+                <button class="panel-button" id="selectImageButton" disabled>Select Image</button>
+                <span id="imageInfo" class="image-info">No image selected.</span>
+                <input type="file" id="imageFileInput" accept="image/*" style="display: none;"> <!-- Hidden image file input -->
+            </div>
+            <div class="transcript-controls">
+                <input type="checkbox" id="enableTranscriptCheckbox">
+                <label for="enableTranscriptCheckbox">Enable Transcript</label>
+                <input type="checkbox" id="forcedMemoryCheckbox">
+                <label for="forcedMemoryCheckbox">Forced Memory</label>
+            </div>
+            <div class="segment-controls"> <!-- New Segment Controls -->
+                <input type="checkbox" id="enableSegmentedCheckbox">
+                <label for="enableSegmentedCheckbox">Enable Segmented Replies</label>
+                <button class="panel-button" id="sendNextSegmentButton" disabled>Send Next Segment</button> <!-- New button -->
+                <button class="panel-button" id="resetSegmentedButton" disabled>Reset Segmented</button> <!-- New button -->
+                <button class="panel-button" id="combineSegmentsButton" disabled>Combine Segments</button> <!-- New button -->
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer Section -->
+    <footer class="footer">
+        <span>&copy; 2025 My Web App. All rights reserved.</span>
+        <div class="footer-links">
+            <a href="documentation.html">Documentation</a> |
+            <a href="https://aistudios.google.com/" target="_blank">AI Studios</a>
+            <span>Created by Elton Boehnen</span>
+        </div>
+    </footer>
+
+    <!-- Overlay Settings Panel -->
+    <div class="overlay-panel" id="settingsPanel">
+        <div class="overlay-content">
+            <button class="overlay-close-button" id="closeSettingsPanel">&times;</button>
+            <h2>Settings</h2>
+            <nav class="overlay-tab-nav">
+                <button class="overlay-tab-button active" data-overlay-tab="settings1">API</button>
+            </nav>
+
+            <section id="settings1" class="overlay-tab-content active">
+                <h3>API Configuration</h3>
+                <p>You can hardcode your API key directly in the JavaScript, or enter it here for the current session.</p>
+                <label for="apiKeyInput" style="display: block; margin-bottom: 5px; font-weight: 500;">Gemini API Key:</label>
+                <input type="text" id="apiKeyInput" placeholder="Enter your Gemini API Key" style="width: calc(100% - 22px); padding: 10px; border: 1px solid #ddd; border-radius: 5px; margin-bottom: 15px;">
+                <div id="hardcodedApiKeyDisplay" style="font-size: 0.9em; color: #666;"></div>
+            </section>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- Global Variables ---
+            /******************************************************************
+             * *
+             * API KEY CONFIGURATION:                                       *
+             * --------------------                                         *
+             * You can hardcode your Gemini API key directly below.         *
+             * If you enter a key in the Settings > API tab, it will        *
+             * override this hardcoded value for the current session.       *
+             * *
+             ******************************************************************/
+            let currentApiKey = ""; // <-- ENTER YOUR GEMINI API KEY HERE BETWEEN THE QUOTES -->
+            // Example: let currentApiKey = "YOUR_API_KEY_GOES_HERE";
+
+
+            let debugFileName = ''; // Variable to store the debug file name
+            let debugFileContent = ''; // Variable to store the content of the debug file
+            let originalDebugFileContent = ''; // Stores the content of the debug file when it was first loaded
+            let originalDebugFileName = ''; // Stores the name of the debug file when it was first loaded
+            let generalFileName = ''; // Variable for general file name
+            let generalFileContent = ''; // Variable for general file content
+            let imageFileName = ''; // Variable for image file name
+            let imageFileBase64 = ''; // Variable for image Base64 content
+            let imageFileMimeType = ''; // Variable for image MIME type
+            let chatHistory = []; // Stores the entire conversation history for the transcript
+            let currentModel = 'gemini-2.0-flash'; // Default Gemini model
+            let enableTranscript = false; // Default: Transcript off
+            let forcedMemory = false; // Default: Forced Memory off
+            let enableSegmentedReplies = false; // New: Default Segmented Replies off
+            let lastGeminiResponse = ''; // Stores Gemini's last response for forced memory
+
+            // Variables for chain-querying segmentation
+            let segmentCounter = 0; // Tracks the current segment number being requested
+            let originalQueryForSegmentation = ''; // Stores the initial query for subsequent segment requests
+            let combinedSegmentedOutput = ''; // Stores all received segments to be combined later
+            let isResponseComplete = false; // Flag to indicate if Gemini has signaled the end of the full response
+
+
+            // --- Element References ---
+            const tabButtons = document.querySelectorAll('.tab-button');
+            const tabContents = document.querySelectorAll('.tab-content');
+            const settingsButton = document.getElementById('settingsButton');
+            const settingsPanel = document.getElementById('settingsPanel');
+            const closeSettingsPanelButton = document.getElementById('closeSettingsPanel');
+            const overlayTabButtons = document.querySelectorAll('.overlay-tab-button');
+            const overlayTabContents = document.querySelectorAll('.overlay-tab-content');
+
+            const queryInput = document.getElementById('queryInput');
+            const responseOutput = document.getElementById('responseOutput');
+            const sendButton = document.getElementById('sendButton');
+            const loadingIndicator = document.getElementById('loadingIndicator');
+            const apiKeyInput = document.getElementById('apiKeyInput');
+            const hardcodedApiKeyDisplay = document.getElementById('hardcodedApiKeyDisplay');
+            const formatSelect = document.getElementById('formatSelect');
+            const modelSelect = document.getElementById('modelSelect');
+
+            const saveOutputButton = document.getElementById('saveOutputButton');
+            const formattedSaveButton = document.getElementById('formattedSaveButton');
+            const saveTranscriptButton = document.getElementById('saveTranscriptButton');
+            const copyResponseButton = document.getElementById('copyResponseButton');
+            const clearTranscriptButton = document.getElementById('clearTranscriptButton');
+            const debugModeCheckbox = document.getElementById('debugModeCheckbox');
+            const setDebugFileButton = document.getElementById('setDebugFileButton');
+            const backupDebugFileButton = document.getElementById('backupDebugFileButton');
+            const saveDebugFileButton = document.getElementById('saveDebugFileButton');
+            const debugFileInput = document.getElementById('debugFileInput');
+            const debugFileInfo = document.getElementById('debugFileInfo');
+
+            const sendFileCheckbox = document.getElementById('sendFileCheckbox');
+            const selectFileButton = document.getElementById('selectFileButton');
+            const fileInfo = document.getElementById('fileInfo');
+            const generalFileInput = document.getElementById('generalFileInput');
+
+            const sendImageCheckbox = document.getElementById('sendImageCheckbox');
+            const selectImageButton = document.getElementById('selectImageButton');
+            const imageInfo = document.getElementById('imageInfo');
+            const imageFileInput = document.getElementById('imageFileInput');
+
+            const transcriptOutput = document.getElementById('transcriptOutput');
+            const enableTranscriptCheckbox = document.getElementById('enableTranscriptCheckbox');
+            const forcedMemoryCheckbox = document.getElementById('forcedMemoryCheckbox');
+            const enableSegmentedCheckbox = document.getElementById('enableSegmentedCheckbox');
+            const segmentedOutput = document.getElementById('segmentedOutput');
+            const sendNextSegmentButton = document.getElementById('sendNextSegmentButton');
+            const resetSegmentedButton = document.getElementById('resetSegmentedButton');
+            const combineSegmentsButton = document.getElementById('combineSegmentsButton'); // New reference
+            const statusMessage = document.getElementById('statusMessage');
+
+
+            // --- Functions ---
+
+            // Function to display temporary status messages
+            function displayStatusMessage(message, duration = 3000) {
+                statusMessage.textContent = message;
+                statusMessage.classList.add('show');
+                setTimeout(() => {
+                    statusMessage.classList.remove('show');
+                    statusMessage.textContent = ''; // Clear message after hiding
+                }, duration);
+            }
+
+            // Function to render the chat history into the transcript output area
+            function renderTranscript() {
+                if (!enableTranscript) {
+                    transcriptOutput.innerHTML = ''; // Ensure it's empty if transcript is disabled
+                    return;
+                }
+                transcriptOutput.innerHTML = ''; // Clear previous content
+                chatHistory.forEach(entry => {
+                    const role = entry.role === 'user' ? 'You' : 'Gemini';
+                    const messageElement = document.createElement('div');
+                    messageElement.innerHTML = `<strong>${role}:</strong> `;
+
+                    entry.parts.forEach(part => {
+                        if (part.text) {
+                            // Replace newlines with <br> for display
+                            messageElement.innerHTML += `${part.text.replace(/\n/g, '<br>')}`;
+                        } else if (part.inlineData && part.inlineData.mimeType.startsWith('image/')) {
+                            const img = document.createElement('img');
+                            img.src = `data:${part.inlineData.mimeType};base64,${part.inlineData.data}`;
+                            img.alt = 'Attached Image';
+                            messageElement.appendChild(img);
+                        }
+                    });
+                    messageElement.innerHTML += `<br><br>`;
+                    transcriptOutput.appendChild(messageElement);
+                });
+                // Scroll to the bottom of the transcript
+                transcriptOutput.scrollTop = transcriptOutput.scrollHeight;
+            }
+
+            // Function to trigger file download
+            function downloadFile(filename, content) {
+                const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                displayStatusMessage(`Output suggested to be saved as "${filename}". Please confirm in your browser's download dialog.`);
+            }
+
+            // Function to extract code from Gemini's response
+            function extractCode(responseText, format) {
+                // Mapping of format select values to Markdown language identifiers
+                const languageMap = {
+                    'bash': 'bash',
+                    'cmd': 'cmd', // or 'batch'
+                    'powershell': 'powershell',
+                    'python': 'python',
+                    'javascript': 'javascript',
+                    'css': 'css',
+                    'html5': 'html' // Markdown uses 'html' for HTML5
+                };
+
+                const lang = languageMap[format];
+                if (!lang) {
+                    // If not a code format, return original text
+                    return responseText;
+                }
+
+                // Regex to find Markdown code blocks: ```language\nCODE\n```
+                const regex = new RegExp(`\`\`\`${lang}\\n([\\s\\S]*?)\\n\`\`\``, 'g');
+                let match = regex.exec(responseText);
+
+                if (match && match[1]) {
+                    // Return the content of the first matching code block
+                    return match[1].trim();
+                } else {
+                    // If no specific code block found, try to find any code block
+                    const genericRegex = /```(?:\w+)?\n([\s\S]*?)\n```/g;
+                    let genericMatch = genericRegex.exec(responseText);
+                    if (genericMatch && genericMatch[1]) {
+                        return genericMatch[1].trim();
+                    }
+                    // If no code block found at all, return the original text
+                    return responseText;
+                }
+            }
+
+            // NEW: Function to strip Markdown code fences and optional debug header
+            function stripCodeFences(text) {
+                // Regex to match opening code fence (e.g., ```powershell or ```) followed by optional --- and newline
+                // and closing code fence ```
+                let strippedText = text.replace(/^```(?:\w+)?\s*(\n---\s*)?\n/, ''); // Remove opening fence and optional ---
+                strippedText = strippedText.replace(/\n```\s*$/, ''); // Remove closing fence
+                return strippedText.trim(); // Trim any leading/trailing whitespace
+            }
+
+
+            // --- Initialize API Key Display ---
+            if (currentApiKey) {
+                hardcodedApiKeyDisplay.textContent = `Hardcoded API Key detected (first 5 chars): ${currentApiKey.substring(0, 5)}...`;
+                apiKeyInput.value = currentApiKey; // Pre-fill input if hardcoded
+            } else {
+                hardcodedApiKeyDisplay.textContent = `No hardcoded API key set. Please enter it above.`;
+            }
+
+            // --- API Key Input Listener ---
+            apiKeyInput.addEventListener('input', () => {
+                currentApiKey = apiKeyInput.value.trim();
+                if (currentApiKey) {
+                    hardcodedApiKeyDisplay.textContent = `Using entered API Key (first 5 chars): ${currentApiKey.substring(0, 5)}...`;
+                } else {
+                    hardcodedApiKeyDisplay.textContent = `No API key entered.`;
+                }
+            });
+
+            // --- Model Select Listener ---
+            modelSelect.addEventListener('change', () => {
+                currentModel = modelSelect.value;
+                displayStatusMessage(`Gemini model set to: ${currentModel}`);
+            });
+
+            // --- Main Content Tabs Logic ---
+            tabButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    tabButtons.forEach(btn => btn.classList.remove('active'));
+                    tabContents.forEach(content => content.classList.remove('active'));
+                    button.classList.add('active');
+                    const targetTabId = button.dataset.tab;
+                    const targetTabContent = document.getElementById(targetTabId);
+                    if (targetTabContent) {
+                        targetTabContent.classList.add('active');
+                    }
+                });
+            });
+
+            // --- Overlay Settings Panel Logic ---
+            settingsButton.addEventListener('click', () => {
+                settingsPanel.style.display = 'flex'; // Show the overlay
+            });
+
+            closeSettingsPanelButton.addEventListener('click', () => {
+                settingsPanel.style.display = 'none'; // Hide the overlay
+            });
+
+            // Close panel if clicked outside content
+            settingsPanel.addEventListener('click', (event) => {
+                if (event.target === settingsPanel) {
+                    settingsPanel.style.display = 'none';
+                }
+            });
+
+            // --- Overlay Settings Tabs Logic ---
+            overlayTabButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    overlayTabButtons.forEach(btn => btn.classList.remove('active'));
+                    overlayTabContents.forEach(content => content.classList.remove('active'));
+                    button.classList.add('active');
+                    const targetOverlayTabId = button.dataset.overlayTab;
+                    const targetOverlayTabContent = document.getElementById(targetOverlayTabId);
+                    if (targetOverlayTabContent) {
+                        targetOverlayTabContent.classList.add('active');
+                    }
+                });
+            });
+
+            // Function to update debug file related button states
+            function updateDebugFileButtons() {
+                const isChecked = debugModeCheckbox.checked;
+                const hasContent = debugFileContent.length > 0;
+                setDebugFileButton.disabled = !isChecked;
+                backupDebugFileButton.disabled = !isChecked || !originalDebugFileContent;
+                saveDebugFileButton.disabled = !isChecked || !hasContent; // Enable save only if checked and content exists
+            }
+
+            // --- Debug Mode Checkbox Logic ---
+            debugModeCheckbox.addEventListener('change', () => {
+                if (!debugModeCheckbox.checked) {
+                    debugFileName = '';
+                    debugFileContent = '';
+                    originalDebugFileContent = '';
+                    originalDebugFileName = '';
+                    debugFileInfo.textContent = 'No debug file selected.';
+                }
+                updateDebugFileButtons();
+            });
+
+            // --- Set Debug File Button Logic (Opens file dialog) ---
+            setDebugFileButton.addEventListener('click', () => {
+                if (debugModeCheckbox.checked) {
+                    debugFileInput.click();
+                }
+            });
+
+            // --- Handle File Selection for Debug File ---
+            debugFileInput.addEventListener('change', (event) => {
+                const file = event.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        debugFileContent = e.target.result;
+                        debugFileName = file.name;
+                        originalDebugFileContent = e.target.result; // Store original for backup
+                        originalDebugFileName = file.name; // Store original name for backup
+                        debugFileInfo.textContent = `Debug file selected: "${debugFileName}"`;
+                        updateDebugFileButtons();
+                        displayStatusMessage(`Debug file "${debugFileName}" loaded successfully.`);
+                    };
+                    reader.onerror = () => {
+                        debugFileContent = '';
+                        debugFileName = '';
+                        originalDebugFileContent = '';
+                        originalDebugFileName = '';
+                        debugFileInfo.textContent = 'Failed to load debug file.';
+                        updateDebugFileButtons();
+                        displayStatusMessage('Error reading debug file.');
+                    };
+                    reader.readAsText(file);
+                } else {
+                    debugFileContent = '';
+                    debugFileName = '';
+                    debugFileInfo.textContent = 'No debug file selected.';
+                    updateDebugFileButtons();
+                    displayStatusMessage('No file selected.');
+                }
+            });
+
+            // --- Backup Debug File Button Logic ---
+            backupDebugFileButton.addEventListener('click', () => {
+                if (originalDebugFileContent && originalDebugFileName) {
+                    const fileNameToSave = originalDebugFileName.includes('.') ?
+                                           originalDebugFileName.replace(/\./, '_backup.') :
+                                           originalDebugFileName + '_backup.txt';
+
+                    downloadFile(fileNameToSave, originalDebugFileContent);
+                } else {
+                    displayStatusMessage("No original debug file content to backup.");
+                }
+            });
+
+            // --- Save Debug File Button Logic (New) ---
+            saveDebugFileButton.addEventListener('click', () => {
+                if (debugFileContent && debugFileName) {
+                    downloadFile(debugFileName, debugFileContent);
+                } else {
+                    displayStatusMessage("No debug file content to save.");
+                }
+            });
+
+            // --- Send File Checkbox Logic ---
+            sendFileCheckbox.addEventListener('change', () => {
+                const isChecked = sendFileCheckbox.checked;
+                selectFileButton.disabled = !isChecked;
+                if (!isChecked) {
+                    generalFileName = '';
+                    generalFileContent = '';
+                    fileInfo.textContent = 'No file selected.';
+                    generalFileInput.value = ''; // Clear file input
+                }
+            });
+
+            // --- Select File Button Logic (Opens file dialog for general file) ---
+            selectFileButton.addEventListener('click', () => {
+                if (sendFileCheckbox.checked) {
+                    generalFileInput.click();
+                }
+            });
+
+            // --- Handle File Selection for General File ---
+            generalFileInput.addEventListener('change', (event) => {
+                const file = event.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        generalFileContent = e.target.result;
+                        generalFileName = file.name;
+                        fileInfo.textContent = `File selected: "${generalFileName}"`;
+                        displayStatusMessage(`File "${generalFileName}" loaded successfully.`);
+                    };
+                    reader.onerror = () => {
+                        generalFileContent = '';
+                        generalFileName = '';
+                        fileInfo.textContent = 'Failed to load file.';
+                        displayStatusMessage('Error reading file.');
+                    };
+                    reader.readAsText(file);
+                } else {
+                    generalFileContent = '';
+                    generalFileName = '';
+                    fileInfo.textContent = 'No file selected.';
+                    displayStatusMessage('No file selected.');
+                }
+            });
+
+            // --- Send Image Checkbox Logic ---
+            sendImageCheckbox.addEventListener('change', () => {
+                const isChecked = sendImageCheckbox.checked;
+                selectImageButton.disabled = !isChecked;
+                if (!isChecked) {
+                    imageFileName = '';
+                    imageFileBase64 = '';
+                    imageFileMimeType = '';
+                    imageInfo.textContent = 'No image selected.';
+                    imageFileInput.value = ''; // Clear file input
+                }
+            });
+
+            // --- Select Image Button Logic (Opens file dialog for image) ---
+            selectImageButton.addEventListener('click', () => {
+                if (sendImageCheckbox.checked) {
+                    imageFileInput.click();
+                }
+            });
+
+            // --- Handle File Selection for Image File ---
+            imageFileInput.addEventListener('change', (event) => {
+                const file = event.target.files[0];
+                if (file && file.type.startsWith('image/')) {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        // Extract Base64 string and MIME type
+                        const base64String = e.target.result.split(',')[1];
+                        const mimeType = e.target.result.split(',')[0].split(':')[1].split(';')[0];
+
+                        imageFileBase64 = base64String;
+                        imageFileMimeType = mimeType;
+                        imageFileName = file.name;
+                        imageInfo.textContent = `Image selected: "${imageFileName}"`;
+                        displayStatusMessage(`Image "${imageFileName}" loaded successfully.`);
+                    };
+                    reader.onerror = () => {
+                        imageFileBase64 = '';
+                        imageFileMimeType = '';
+                        imageFileName = '';
+                        imageInfo.textContent = 'Failed to load image.';
+                        displayStatusMessage('Error reading image file.');
+                    };
+                    reader.readAsDataURL(file); // Read as Data URL to get Base64
+                } else {
+                    imageFileBase64 = '';
+                    imageFileMimeType = '';
+                    imageFileName = '';
+                    imageInfo.textContent = 'No image selected or invalid file type.';
+                    displayStatusMessage('Please select a valid image file.');
+                }
+            });
+
+            // --- Save Output Button Logic (Plain Text Save) ---
+            saveOutputButton.addEventListener('click', () => {
+                const content = responseOutput.value;
+                if (!content) {
+                    displayStatusMessage("No content to save in the Response tab.");
+                    return;
+                }
+
+                // Default filename for response output
+                let fileNameToSave = 'response.txt';
+                downloadFile(fileNameToSave, content);
+            });
+
+            // --- Formatted Save Button Logic ---
+            formattedSaveButton.addEventListener('click', () => {
+                const content = responseOutput.value;
+                if (!content) {
+                    displayStatusMessage("No content to save in the Response tab.");
+                    return;
+                }
+
+                const selectedFormat = formatSelect.value;
+                let fileExtension = '.txt';
+
+                switch (selectedFormat) {
+                    case 'bash':
+                        fileExtension = '.sh';
+                        break;
+                    case 'cmd':
+                        fileExtension = '.cmd';
+                        break;
+                    case 'powershell':
+                        fileExtension = '.ps1';
+                        break;
+                    case 'python':
+                        fileExtension = '.py';
+                        break;
+                    case 'javascript':
+                        fileExtension = '.js';
+                        break;
+                    case 'css':
+                        fileExtension = '.css';
+                        break;
+                    case 'html5':
+                        fileExtension = '.html';
+                        break;
+                    case 'document':
+                    case 'default':
+                    case 'debug':
+                    default:
+                        fileExtension = '.txt';
+                        break;
+                }
+
+                const fileNameToSave = `response_output${fileExtension}`;
+                downloadFile(fileNameToSave, content);
+            });
+
+            // --- Save Transcript Button Logic ---
+            saveTranscriptButton.addEventListener('click', () => {
+                const content = transcriptOutput.innerText;
+                if (!content.trim()) {
+                    displayStatusMessage("No conversation transcript to save.");
+                    return;
+                }
+
+                const now = new Date();
+                const timestamp = `${now.getFullYear()}${(now.getMonth() + 1).toString().padStart(2, '0')}${now.getDate().toString().padStart(2, '0')}_${now.getHours().toString().padStart(2, '0')}${now.getMinutes().toString().padStart(2, '0')}${now.getSeconds().toString().padStart(2, '0')}`;
+                const fileNameToSave = `Gemini-transcript_${timestamp}.txt`;
+
+                downloadFile(fileNameToSave, content);
+            });
+
+            // --- Copy Response Button Logic ---
+            copyResponseButton.addEventListener('click', () => {
+                const content = responseOutput.value;
+                if (!content) {
+                    displayStatusMessage("No content to copy from the Response tab.");
+                    return;
+                }
+
+                // Select the text in the textarea
+                responseOutput.select();
+                responseOutput.setSelectionRange(0, 99999); // For mobile devices
+
+                try {
+                    document.execCommand('copy');
+                    displayStatusMessage("Response copied to clipboard!");
+                } catch (err) {
+                    console.error('Failed to copy text: ', err);
+                    displayStatusMessage("Failed to copy response to clipboard. Please try manually.");
+                }
+            });
+
+            // --- Clear Transcript Button Logic ---
+            clearTranscriptButton.addEventListener('click', () => {
+                chatHistory = []; // Clear the chat history array
+                renderTranscript(); // Re-render to show empty transcript
+                displayStatusMessage("Conversation transcript cleared.");
+            });
+
+            // --- Enable Transcript Checkbox Logic ---
+            enableTranscriptCheckbox.addEventListener('change', () => {
+                enableTranscript = enableTranscriptCheckbox.checked;
+                if (!enableTranscript) {
+                    chatHistory = []; // Clear history when disabling
+                    transcriptOutput.innerHTML = ''; // Clear display
+                    displayStatusMessage("Transcript disabled and cleared.");
+                } else {
+                    displayStatusMessage("Transcript enabled.");
+                    renderTranscript(); // Render existing history if re-enabled
+                }
+            });
+
+            // --- Forced Memory Checkbox Logic ---
+            forcedMemoryCheckbox.addEventListener('change', () => {
+                forcedMemory = forcedMemoryCheckbox.checked;
+                displayStatusMessage(`Forced Memory ${forcedMemory ? 'enabled' : 'disabled'}.`);
+            });
+
+            // --- Enable Segmented Replies Checkbox Logic (New) ---
+            enableSegmentedCheckbox.addEventListener('change', () => {
+                enableSegmentedReplies = enableSegmentedCheckbox.checked;
+                if (!enableSegmentedReplies) {
+                    segmentedOutput.innerHTML = ''; // Clear segmented output if disabled
+                    segmentCounter = 0;
+                    originalQueryForSegmentation = '';
+                    combinedSegmentedOutput = '';
+                    isResponseComplete = false;
+                    sendButton.disabled = false; // Re-enable main send button
+                    sendNextSegmentButton.disabled = true; // Disable next segment button
+                    resetSegmentedButton.disabled = true; // Disable reset segmented button
+                    combineSegmentsButton.disabled = true; // Disable combine button
+                    displayStatusMessage("Segmented Replies disabled.");
+                } else {
+                    // When enabling, ensure initial state for segmented buttons
+                    sendButton.disabled = false; // Main send button should be enabled for initial query
+                    sendNextSegmentButton.disabled = true; // Next segment button disabled until first response
+                    resetSegmentedButton.disabled = true; // Reset button disabled until first response
+                    combineSegmentsButton.disabled = true; // Disable combine button until first response
+                    displayStatusMessage("Segmented Replies enabled. Response will be displayed in segments.");
+                }
+            });
+
+            // --- Send Next Segment Button Logic (New) ---
+            sendNextSegmentButton.addEventListener('click', async () => {
+                if (!enableSegmentedReplies) {
+                    displayStatusMessage("Segmented replies are not enabled.");
+                    return;
+                }
+                if (isResponseComplete) {
+                    displayStatusMessage("The full response has already been received.");
+                    sendNextSegmentButton.disabled = true;
+                    return;
+                }
+
+                segmentCounter++; // Increment segment counter
+                const segmentRequestPrompt = `Continuing from the previous part (Segment ${segmentCounter - 1}), please provide the next part of your complete answer (approx. 300 lines). End this part with '[END_SEGMENT_${segmentCounter}]'. If your complete answer fits within this part, also include '[END_RESPONSE]' immediately after the segment marker. If your answer is longer, just provide this segment, and I will ask for the next part.`;
+
+                // Construct user parts for this follow-up request
+                let userParts = [];
+                // Include the original query for context, followed by the segment request
+                userParts.push({ text: `Original Query: ${originalQueryForSegmentation}\n\nPrevious Segment Content:\n---\n${lastGeminiResponse}\n---\n\n${segmentRequestPrompt}` });
+
+                let payloadContents;
+                if (enableTranscript) {
+                    // Add the current user turn (request for next segment) to history
+                    chatHistory.push({ role: "user", parts: userParts });
+                    payloadContents = chatHistory;
+                } else {
+                    // If transcript is off, we need to manually build a minimal history for the chain
+                    payloadContents = [
+                        { role: "user", parts: [{ text: originalQueryForSegmentation }] }, // Initial query context
+                        { role: "model", parts: [{ text: lastGeminiResponse }] }, // Previous segment from Gemini
+                        { role: "user", parts: userParts } // Current request for next segment
+                    ];
+                }
+
+                renderTranscript(); // Update transcript display
+
+                loadingIndicator.style.display = 'inline';
+                sendButton.disabled = true;
+                sendNextSegmentButton.disabled = true; // Disable until response is back
+                combineSegmentsButton.disabled = true; // Disable combine button during API call
+                responseOutput.value = ''; // Clear main response area for new content
+
+                try {
+                    const payload = { contents: payloadContents };
+                    const apiKey = currentApiKey;
+                    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${currentModel}:generateContent?key=${apiKey}`;
+
+                    const response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+
+                    const result = await response.json();
+
+                    if (result.candidates && result.candidates.length > 0 &&
+                        result.candidates[0].content && result.candidates[0].content.parts &&
+                        result.candidates[0].content.parts.length > 0) {
+                        let text = result.candidates[0].content.parts[0].text;
+
+                        lastGeminiResponse = text; // Store the full raw text for next segment context
+
+                        // Check for segment and end markers
+                        const segmentMarker = `[END_SEGMENT_${segmentCounter}]`;
+                        const endResponseMarker = '[END_RESPONSE]';
+                        let segmentContent = text;
+                        let hasSegmentMarker = text.includes(segmentMarker);
+                        let hasEndResponseMarker = text.includes(endResponseMarker);
+
+                        if (hasSegmentMarker) {
+                            segmentContent = text.split(segmentMarker)[0].trim();
+                        }
+
+                        // Apply stripping for code fences to the segment content before display/combination
+                        const selectedFormat = formatSelect.value;
+                        if (codeFormats.includes(selectedFormat) || debugModeCheckbox.checked) {
+                            segmentContent = stripCodeFences(segmentContent);
+                        }
+
+                        // Append the segment to the segmented output
+                        const segmentDiv = document.createElement('div');
+                        segmentDiv.innerHTML = `<h3>Segment ${segmentCounter}:</h3><pre>${segmentContent}</pre><hr>`;
+                        segmentedOutput.appendChild(segmentDiv);
+
+                        // Update combinedSegmentedOutput
+                        combinedSegmentedOutput += segmentContent + '\n\n';
+
+                        // Set response complete flag
+                        isResponseComplete = hasEndResponseMarker;
+
+                        displayStatusMessage(`Response received: Segment ${segmentCounter}. ${isResponseComplete ? 'Response complete.' : 'More segments expected.'}`);
+
+                        // Update button states
+                        sendNextSegmentButton.disabled = isResponseComplete;
+                        resetSegmentedButton.disabled = false;
+                        combineSegmentsButton.disabled = false;
+
+                        // The full raw text (with markers) goes to the Response tab for debugging/inspection
+                        responseOutput.value = text;
+
+                        // Add the model's response to chat history for transcript
+                        if (enableTranscript) {
+                            chatHistory.push({ role: "model", parts: [{ text: text }] });
+                            renderTranscript();
+                        }
+
+                    } else if (result.error) {
+                        const errorMessage = `API Error: ${result.error.message}`;
+                        responseOutput.value = errorMessage;
+                        if (enableTranscript) {
+                            chatHistory.push({ role: "model", parts: [{ text: errorMessage }] });
+                            renderTranscript();
+                        }
+                        displayStatusMessage(errorMessage);
+                    }
+                    else {
+                        const noResponse = "Could not get a valid response from Gemini.";
+                        responseOutput.value = noResponse;
+                        if (enableTranscript) {
+                            chatHistory.push({ role: "model", parts: [{ text: noResponse }] });
+                            renderTranscript();
+                        }
+                        displayStatusMessage(noResponse);
+                    }
+                } catch (error) {
+                    console.error('Error calling Gemini API:', error);
+                    const fetchError = `Failed to connect to Gemini API: ${error.message}`;
+                    responseOutput.value = fetchError;
+                    if (enableTranscript) {
+                        chatHistory.push({ role: "model", parts: [{ text: fetchError }] });
+                        renderTranscript();
+                    }
+                    displayStatusMessage(fetchError);
+                } finally {
+                    loadingIndicator.style.display = 'none';
+                    sendButton.disabled = false; // Re-enable main send button after any API call
+                }
+            });
+
+            // --- Reset Segmented Button Logic (New) ---
+            resetSegmentedButton.addEventListener('click', () => {
+                segmentedOutput.innerHTML = ''; // Clear displayed segments
+                segmentCounter = 0; // Reset segment counter
+                originalQueryForSegmentation = ''; // Clear original query
+                lastGeminiResponse = ''; // Clear last response for segmentation
+                combinedSegmentedOutput = ''; // Clear combined output
+                isResponseComplete = false; // Reset completion flag
+                sendButton.disabled = false; // Re-enable main send button
+                sendNextSegmentButton.disabled = true; // Disable next segment button
+                resetSegmentedButton.disabled = true; // Disable itself
+                combineSegmentsButton.disabled = true; // Disable combine button
+                displayStatusMessage("Segmented replies reset.");
+            });
+
+            // --- Combine Segments Button Logic (New) ---
+            combineSegmentsButton.addEventListener('click', () => {
+                if (!combinedSegmentedOutput.trim()) {
+                    displayStatusMessage("No segments to combine.");
+                    return;
+                }
+                responseOutput.value = combinedSegmentedOutput.trim(); // Put combined text in the Response tab
+                displayStatusMessage("All segments combined into the Response tab.");
+                document.querySelector('.tab-button[data-tab="tab2"]').click(); // Switch to Response tab
+            });
+
+
+            // --- Main Send Button Logic (Modified for Initial Segmented Query) ---
+            sendButton.addEventListener('click', async () => {
+                const prompt = queryInput.value.trim();
+                if (!prompt && !sendImageCheckbox.checked) {
+                    responseOutput.value = "Please enter a query or select an image to send.";
+                    displayStatusMessage("Please enter a query or select an image to send.");
+                    return;
+                }
+
+                if (!currentApiKey) {
+                    responseOutput.value = "Please enter your Gemini API Key in the Settings > API tab.";
+                    displayStatusMessage("Please enter your Gemini API Key in the Settings > API tab.");
+                    return;
+                }
+
+                const selectedFormat = formatSelect.value;
+                let userParts = [];
+                let finalPromptText = prompt;
+
+                const formatPrefixes = {
+                    'bash': 'bash',
+                    'cmd': 'cmd',
+                    'powershell': 'powershell',
+                    'python': 'python',
+                    'javascript': 'javascript',
+                    'css': 'css',
+                    'html5': 'html'
+                };
+                const codeFormats = Object.keys(formatPrefixes);
+
+                // Reset segmentation state for a new initial query
+                segmentCounter = 0;
+                originalQueryForSegmentation = prompt; // Store original query
+                combinedSegmentedOutput = '';
+                isResponseComplete = false;
+                segmentedOutput.innerHTML = ''; // Clear segmented output for a new query
+
+                // Apply format prefix
+                if (codeFormats.includes(selectedFormat)) {
+                    const prefix = formatPrefixes[selectedFormat] || '';
+                    finalPromptText = `${prefix} ${finalPromptText} - I need straight code, leave your comments in code itself commented appropriately! No Talk, just code!`;
+                }
+
+                // Apply new debug instruction if debug mode is on
+                if (debugModeCheckbox.checked) {
+                    const debugInstruction = "Please! No comments or talking! Just send me back the working code and comment in the script header if needed! No talk! Just code! Debug this please!";
+                    finalPromptText = `${debugInstruction}\n\n${finalPromptText}`;
+                }
+
+                // Apply segmented reply instruction for the FIRST segment
+                if (enableSegmentedReplies) {
+                    segmentCounter = 1; // Start with segment 1
+                    const segmentationInstruction = `Please provide the first part of your complete answer (approx. 300 lines). End this part with '[END_SEGMENT_${segmentCounter}]'. If your complete answer fits within this part, also include '[END_RESPONSE]' immediately after the segment marker. If your answer is longer, just provide this segment, and I will ask for the next part.`;
+                    finalPromptText = `${segmentationInstruction}\n\n${finalPromptText}`;
+                }
+
+                // Prepend Forced Memory (only if not segmented, or if segmented and it's not the first query)
+                // For segmented replies, forced memory is handled explicitly in sendNextSegmentButton
+                if (forcedMemory && lastGeminiResponse && !enableSegmentedReplies) {
+                    finalPromptText = `--- GEMINI'S LAST RESPONSE (FORCED MEMORY) ---\n${lastGeminiResponse}\n--- END OF LAST RESPONSE ---\n\n${finalPromptText}`;
+                }
+
+                // Prepend General File Content
+                if (sendFileCheckbox.checked && generalFileContent) {
+                    finalPromptText = `Attached File Content (${generalFileName}):\n---\n${generalFileContent}\n---\n\n${finalPromptText}`;
+                }
+
+                // Prepend Debug File Content
+                if (debugModeCheckbox.checked && debugFileContent) {
+                    finalPromptText = `Debug File Content (${debugFileName}):\n---\n${debugFileContent}\n---\n\n${finalPromptText}`;
+                }
+
+                userParts.push({ text: finalPromptText });
+
+                if (sendImageCheckbox.checked && imageFileBase64) {
+                    userParts.push({
+                        inlineData: {
+                            mimeType: imageFileMimeType,
+                            data: imageFileBase64
+                        }
+                    });
+                }
+
+                let payloadContents;
+                if (enableTranscript) {
+                    chatHistory.push({ role: "user", parts: userParts });
+                    payloadContents = chatHistory;
+                } else {
+                    payloadContents = [{ role: "user", parts: userParts }];
+                }
+
+                renderTranscript();
+
+                loadingIndicator.style.display = 'inline';
+                sendButton.disabled = true;
+                sendNextSegmentButton.disabled = true; // Disable initially
+                resetSegmentedButton.disabled = true; // Disable initially
+                combineSegmentsButton.disabled = true; // Disable initially
+                responseOutput.value = '';
+
+
+                try {
+                    const payload = { contents: payloadContents };
+                    const apiKey = currentApiKey;
+                    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${currentModel}:generateContent?key=${apiKey}`;
+
+                    const response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+
+                    const result = await response.json();
+
+                    if (result.candidates && result.candidates.length > 0 &&
+                        result.candidates[0].content && result.candidates[0].content.parts &&
+                        result.candidates[0].content.parts.length > 0) {
+                        let text = result.candidates[0].content.parts[0].text;
+
+                        lastGeminiResponse = text; // Store the raw response for forced memory / next segment context
+
+                        if (enableSegmentedReplies) {
+                            const segmentMarker = `[END_SEGMENT_${segmentCounter}]`;
+                            const endResponseMarker = '[END_RESPONSE]';
+                            let segmentContent = text;
+                            let hasSegmentMarker = text.includes(segmentMarker);
+                            let hasEndResponseMarker = text.includes(endResponseMarker);
+
+                            if (hasSegmentMarker) {
+                                segmentContent = text.split(segmentMarker)[0].trim();
+                            }
+
+                            // Apply stripping for code fences to the segment content before display/combination
+                            const selectedFormat = formatSelect.value;
+                            if (codeFormats.includes(selectedFormat) || debugModeCheckbox.checked) {
+                                segmentContent = stripCodeFences(segmentContent);
+                            }
+
+                            // Append the segment to the segmented output
+                            const segmentDiv = document.createElement('div');
+                            segmentDiv.innerHTML = `<h3>Segment ${segmentCounter}:</h3><pre>${segmentContent}</pre><hr>`;
+                            segmentedOutput.appendChild(segmentDiv);
+
+                            // Update combinedSegmentedOutput
+                            combinedSegmentedOutput += segmentContent + '\n\n';
+
+                            // Set response complete flag
+                            isResponseComplete = hasEndResponseMarker;
+
+                            displayStatusMessage(`Response received: Segment ${segmentCounter}. ${isResponseComplete ? 'Response complete.' : 'More segments expected.'}`);
+
+                            // Update button states
+                            sendNextSegmentButton.disabled = isResponseComplete;
+                            resetSegmentedButton.disabled = false;
+                            combineSegmentsButton.disabled = false;
+
+                            // The full raw text (with markers) goes to the Response tab for debugging/inspection
+                            responseOutput.value = text;
+
+                        } else { // If segmented replies are NOT enabled
+                            if (codeFormats.includes(selectedFormat)) {
+                                const extractedCode = extractCode(text, selectedFormat);
+                                if (extractedCode) {
+                                    text = extractedCode;
+                                }
+                            } else if (debugModeCheckbox.checked) { // Apply stripping if debug mode is on, even if not a specific code format
+                                text = stripCodeFences(text);
+                            }
+                            responseOutput.value = text;
+                            segmentedOutput.innerHTML = ''; // Ensure segmented tab is empty
+                            // Buttons remain disabled as segmented mode is off
+                        }
+
+                        if (enableTranscript) {
+                            chatHistory.push({ role: "model", parts: [{ text: text }] });
+                            renderTranscript();
+                        }
+
+                    } else if (result.error) {
+                        const errorMessage = `API Error: ${result.error.message}`;
+                        responseOutput.value = errorMessage;
+                        if (enableTranscript) {
+                            chatHistory.push({ role: "model", parts: [{ text: errorMessage }] });
+                            renderTranscript();
+                        }
+                        displayStatusMessage(errorMessage);
+                    }
+                    else {
+                        const noResponse = "Could not get a valid response from Gemini.";
+                        responseOutput.value = noResponse;
+                        if (enableTranscript) {
+                            chatHistory.push({ role: "model", parts: [{ text: noResponse }] });
+                            renderTranscript();
+                        }
+                        displayStatusMessage(noResponse);
+                    }
+                } catch (error) {
+                    console.error('Error calling Gemini API:', error);
+                    const fetchError = `Failed to connect to Gemini API: ${error.message}`;
+                    responseOutput.value = fetchError;
+                    if (enableTranscript) {
+                        chatHistory.push({ role: "model", parts: [{ text: fetchError }] });
+                        renderTranscript();
+                    }
+                    displayStatusMessage(fetchError);
+                } finally {
+                    loadingIndicator.style.display = 'none';
+                    // Re-enable send button only if segmented replies are NOT enabled
+                    if (!enableSegmentedReplies) {
+                        sendButton.disabled = false;
+                    }
+                }
+            });
+
+            // Initial state update for buttons
+            updateDebugFileButtons();
+        });
+    </script>
+</body>
+</html>

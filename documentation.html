@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gemini Chat Application Documentation</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700&family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+            background-color: #f8f8f8;
+        }
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Montserrat', sans-serif;
+            color: #000;
+            margin-top: 1.5em;
+            margin-bottom: 0.5em;
+        }
+        h1 { font-size: 2.5em; }
+        h2 { font-size: 2em; border-bottom: 2px solid #eee; padding-bottom: 0.3em; }
+        h3 { font-size: 1.5em; }
+        ul {
+            list-style-type: disc;
+            margin-left: 20px;
+        }
+        ul li {
+            margin-bottom: 0.5em;
+        }
+        strong {
+            font-weight: 600;
+        }
+        a {
+            color: #007bff;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        .section-header {
+            background-color: #e9e9e9;
+            padding: 10px 15px;
+            border-radius: 5px;
+            margin-bottom: 1em;
+        }
+        .behavior-note {
+            font-style: italic;
+            color: #555;
+            margin-left: 20px;
+            border-left: 3px solid #ccc;
+            padding-left: 10px;
+        }
+        .options-list {
+            list-style-type: none;
+            padding-left: 0;
+        }
+        .options-list li {
+            margin-bottom: 0.8em;
+        }
+        .options-list li strong {
+            display: block;
+            margin-bottom: 0.2em;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Gemini Chat Application Documentation</h1>
+
+    <p>This document provides a comprehensive overview of the Gemini Chat web application, detailing its features, configurations, and how to use each option.</p>
+
+    <h2 id="application-overview">I. Application Overview</h2>
+    <p>The Gemini Chat application is a sleek, minimalistic, and mobile-responsive web interface designed for interacting with the Google Gemini AI models. It allows users to send text queries, attach files and images, manage conversation transcripts, and handle long AI responses through a segmented reply system. It also provides various formatting and debugging options.</p>
+
+    <h2 id="header-controls">II. Header Controls</h2>
+    <p>The application's header is a two-row high, black, minimalistic bar with white font, docked to the top of the screen.</p>
+    <ul>
+        <li><strong>App Name (<code>Gemini Chat</code>):</strong> Displays the name of the application on the left side of the header.</li>
+        <li><strong>Contact Link:</strong> A link that opens a new tab to send an email to <a href="mailto:boehnenelton2024@gmail.com" target="_blank"><code>boehnenelton2024@gmail.com</code></a>.</li>
+        <li><strong>Github Link:</strong> A link that opens a new tab to the GitHub profile <a href="https://github.com/boehnenelton" target="_blank"><code>github.com/boehnenelton</code></a>.</li>
+        <li><strong>Settings Button:</strong> A white button on the right side of the header that, when clicked, opens an overlay panel containing application settings.</li>
+    </ul>
+
+    <h2 id="main-content-tabs">III. Main Content Tabs</h2>
+    <p>The main body section of the application features four tabs to organize different aspects of the interaction.</p>
+
+    <h3>Query Tab (<code>Tab1</code>):</h3>
+    <ul>
+        <li><strong>Purpose:</strong> This is the primary input area where you type your questions, prompts, or instructions for the Gemini AI.</li>
+        <li><strong>Query Input (<code>textarea</code>):</strong> A multi-line text area where you compose your input.</li>
+    </ul>
+
+    <h3>Response Tab (<code>Tab2</code>):</h3>
+    <ul>
+        <li><strong>Purpose:</strong> This tab displays the AI's response to your queries. It's a read-only area where the full, raw response from Gemini appears.</li>
+        <li><strong>Response Output (<code>textarea</code>):</strong> A read-only text area that shows Gemini's complete reply.</li>
+    </ul>
+
+    <h3>Transcript Tab (<code>Tab3</code>):</h3>
+    <ul>
+        <li><strong>Purpose:</strong> This tab provides a chronological record of your conversation with the AI (both your queries and Gemini's responses).</li>
+        <li><strong>Transcript Output (<code>div</code>):</strong> Displays the conversation history. Each turn is clearly marked as "You:" or "Gemini:". Attached images in the conversation are also displayed here.</li>
+    </ul>
+
+    <h3>Segmented Tab (<code>Tab4</code>):</h3>
+    <ul>
+        <li><strong>Purpose:</strong> This tab is specifically designed to handle very long responses from Gemini by displaying them in manageable segments. This prevents API truncation for lengthy outputs.</li>
+        <li><strong>Segmented Output (<code>div</code>):</strong> Displays individual segments of Gemini's response as they are received or requested. Each segment is labeled with its number.</li>
+    </ul>
+
+    <h2 id="quick-configuration-panel">IV. Quick Configuration Panel</h2>
+    <p>Located below the main content tabs, this section provides quick access to various settings and interaction buttons.</p>
+
+    <h3>A. Format Control</h3>
+    <ul>
+        <li><strong>Format Select (<code>dropdown</code>):</strong>
+            <ul>
+                <li><strong>Purpose:</strong> Allows you to specify the desired output format from Gemini. This influences the prompt sent to Gemini, instructing it to provide output in a specific structure (e.g., pure code).</li>
+                <li><strong>Options:</strong>
+                    <ul class="options-list">
+                        <li><strong><code>Default</code>:</strong> No specific formatting instruction. Gemini responds naturally.</li>
+                        <li><strong><code>Document</code>:</strong> General document format.</li>
+                        <li><strong><code>Debug</code>:</strong> Adds a special debug instruction to the prompt, asking for "just working code" with comments in the script header.</li>
+                        <li><strong><code>Bash</code>:</strong> Instructs Gemini to provide pure Bash shell script code.</li>
+                        <li><strong><code>CMD</code>:</strong> Instructs Gemini to provide pure Windows Command Prompt script code.</li>
+                        <li><strong><code>Powershell</code>:</strong> Instructs Gemini to provide pure PowerShell script code.</li>
+                        <li><strong><code>Python</code>:</strong> Instructs Gemini to provide pure Python code.</li>
+                        <li><strong><code>Javascript</code>:</strong> Instructs Gemini to provide pure JavaScript code.</li>
+                        <li><strong><code>CSS</code>:</strong> Instructs Gemini to provide pure CSS code.</li>
+                        <li><strong><code>Html5</code>:</strong> Instructs Gemini to provide pure HTML5 code.</li>
+                    </ul>
+                </li>
+            </ul>
+        </li>
+        <li><strong>Formatted Save Button:</strong>
+            <ul>
+                <li><strong>Purpose:</strong> Saves the content from the "Response" tab to a file with a suggested extension based on the currently selected "Format." For example, if "Python" is selected, it will suggest saving as <code>.py</code>.</li>
+            </ul>
+        </li>
+    </ul>
+
+    <h3>B. Gemini Model Selection</h3>
+    <ul>
+        <li><strong>Gemini Model Select (<code>dropdown</code>):</strong>
+            <ul>
+                <li><strong>Purpose:</strong> Allows you to choose which Gemini AI model to use for your queries.</li>
+                <li><strong>Options:</strong>
+                    <ul class="options-list">
+                        <li><strong><code>gemini-2.0-flash</code> (Default):</strong> A faster, lighter model suitable for many tasks.</li>
+                        <li><strong><code>gemini-2.0-pro</code>:</strong> A more capable model for complex reasoning tasks.</li>
+                    </ul>
+                </li>
+            </ul>
+        </li>
+    </ul>
+
+    <h3>C. Core Interaction Buttons</h3>
+    <ul>
+        <li><strong>Send Button:</strong>
+            <ul>
+                <li><strong>Purpose:</strong> Sends your query (and any attached files/images) to the selected Gemini AI model.</li>
+                <li><strong>Behavior:</strong>
+                    <ul>
+                        <li>If "Enable Segmented Replies" is <strong>off</strong>, it requests the full response and displays it in the "Response" tab.</li>
+                        <li>If "Enable Segmented Replies" is <strong>on</strong>, it sends an initial request for "Segment 1" and instructs Gemini to include <code>[END_SEGMENT_1]</code> and <code>[END_RESPONSE]</code> markers. It then displays the first segment in the "Segmented" tab.</li>
+                        <li>Clears the "Segmented" tab upon a new query.</li>
+                    </ul>
+                </li>
+            </ul>
+        </li>
+        <li><strong>Loading Indicator:</strong> Text that appears next to the "Send" button while Gemini is processing your request.</li>
+        <li><strong>Save Output Button:</strong>
+            <ul>
+                <li><strong>Purpose:</strong> Saves the current content of the "Response" tab to a plain text file (<code>response.txt</code>).</li>
+            </ul>
+        </li>
+        <li><strong>Save Transcript Button:</strong>
+            <ul>
+                <li><strong>Purpose:</strong> Saves the entire conversation history from the "Transcript" tab to a text file, including timestamps.</li>
+            </ul>
+        </li>
+        <li><strong>Copy Response Button:</strong>
+            <ul>
+                <li><strong>Purpose:</strong> Copies the entire content of the "Response" tab to your clipboard.</li>
+            </ul>
+        </li>
+        <li><strong>Clear Transcript Button:</strong>
+            <ul>
+                <li><strong>Purpose:</strong> Clears all conversation history from the "Transcript" tab and resets the internal <code>chatHistory</code>.</li>
+            </ul>
+        </li>
+    </ul>
+
+    <h3>D. Debug Controls</h3>
+    <ul>
+        <li><strong>Debug File Checkbox:</strong>
+            <ul>
+                <li><strong>Purpose:</strong> When checked, enables the debug file functionality. The content of the selected debug file will be prepended to your query, allowing Gemini to use it as additional context for debugging or analysis.</li>
+                <li><strong>Behavior:</strong> Disabling this checkbox clears the selected debug file and its content.</li>
+            </ul>
+        </li>
+        <li><strong>Set Debug File Button:</strong>
+            <ul>
+                <li><strong>Purpose:</strong> Opens a file dialog to select a debug file. Its content will be loaded and available for sending with queries when the "Debug File" checkbox is enabled.</li>
+            </ul>
+        </li>
+        <li><strong>Backup File Button:</strong>
+            <ul>
+                <li><strong>Purpose:</strong> Saves the <em>original</em> content of the currently loaded debug file (as it was when first loaded) to a backup file.</li>
+            </ul>
+        </li>
+        <li><strong>Save Debug File Button:</strong>
+            <ul>
+                <li><strong>Purpose:</strong> Saves the <em>current</em> content of the loaded debug file (which can be modified internally if the app allowed it, though not directly in this UI) to its original filename.</li>
+            </ul>
+        </li>
+        <li><strong>Debug File Info:</strong> Displays the name of the currently selected debug file.</li>
+    </ul>
+
+    <h3>E. File Send Controls</h3>
+    <ul>
+        <li><strong>Send File Checkbox:</strong>
+            <ul>
+                <li><strong>Purpose:</strong> When checked, enables the ability to attach a general text file to your query. The content of this file will be prepended to your prompt.</li>
+                <li><strong>Behavior:</strong> Disabling this checkbox clears the selected file.</li>
+            </ul>
+        </li>
+        <li><strong>Select File Button:</strong>
+            <ul>
+                <li><strong>Purpose:</strong> Opens a file dialog to select any text-based file. Its content will be sent with your query when the "Send File" checkbox is enabled.</li>
+            </ul>
+        </li>
+        <li><strong>File Info:</strong> Displays the name of the currently selected general file.</li>
+    </ul>
+
+    <h3>F. Image Send Controls</h3>
+    <ul>
+        <li><strong>Send Image Checkbox:</strong>
+            <ul>
+                <li><strong>Purpose:</strong> When checked, enables the ability to attach an image file to your query. The image data will be sent to Gemini for visual understanding tasks.</li>
+                <li><strong>Behavior:</strong> Disabling this checkbox clears the selected image.</li>
+            </ul>
+        </li>
+        <li><strong>Select Image Button:</strong>
+            <ul>
+                <li><strong>Purpose:</strong> Opens a file dialog to select an image file (e.g., PNG, JPEG). The image's Base64 data will be sent with your query when the "Send Image" checkbox is enabled.</li>
+            </ul>
+        </li>
+        <li><strong>Image Info:</strong> Displays the name of the currently selected image file.</li>
+    </ul>
+
+    <h3>G. Transcript Controls</h3>
+    <ul>
+        <li><strong>Enable Transcript Checkbox:</strong>
+            <ul>
+                <li><strong>Purpose:</strong> Toggles the recording and display of your conversation history in the "Transcript" tab.</li>
+                <li><strong>Behavior:</strong> If unchecked, the transcript is cleared and no new history is recorded.</li>
+            </ul>
+        </li>
+        <li><strong>Forced Memory Checkbox:</strong>
+            <ul>
+                <li><strong>Purpose:</strong> When enabled, the content of Gemini's <em>last full response</em> is automatically prepended to your <em>next</em> query. This acts as a form of explicit short-term memory, ensuring Gemini has direct access to its immediate previous output for continuity.</li>
+            </ul>
+        </li>
+    </ul>
+
+    <h3>H. Segmented Replies Controls</h3>
+    <ul>
+        <li><strong>Enable Segmented Replies Checkbox:</strong>
+            <ul>
+                <li><strong>Purpose:</strong> Activates the segmented reply feature, which is crucial for handling very long responses from Gemini that might otherwise be truncated by API limits.</li>
+                <li><strong>Behavior:</strong>
+                    <ul>
+                        <li>When enabled, the application instructs Gemini to provide its response in segments, marked with <code>[END_SEGMENT_X]</code> and <code>[END_RESPONSE]</code> (if the response is complete).</li>
+                        <li>Disabling this checkbox clears the segmented output and resets the segmentation state.</li>
+                    </ul>
+                </li>
+            </ul>
+        </li>
+        <li><strong>Send Next Segment Button:</strong>
+            <ul>
+                <li><strong>Purpose:</strong> Available only when "Enable Segmented Replies" is on and the previous segment did <em>not</em> contain the <code>[END_RESPONSE]</code> marker.</li>
+                <li><strong>Behavior:</strong> Sends a follow-up query to Gemini, explicitly asking for the next part of the complete answer, providing context from the original query and the last received segment.</li>
+            </ul>
+        </li>
+        <li><strong>Reset Segmented Button:</strong>
+            <ul>
+                <li><strong>Purpose:</strong> Clears all displayed segments from the "Segmented" tab and resets the internal state of the segmented reply feature, preparing for a new segmented conversation.</li>
+            </ul>
+        </li>
+        <li><strong>Combine Segments Button:</strong>
+            <ul>
+                <li><strong>Purpose:</strong> Gathers all the individual segments currently displayed in the "Segmented" tab and concatenates them into a single block of text, which is then placed into the "Response" tab. This allows you to view the full, reconstructed response.</li>
+            </ul>
+        </li>
+    </ul>
+
+    <h2 id="settings-overlay-panel">V. Settings Overlay Panel</h2>
+    <p>Accessed via the "Settings" button in the header.</p>
+    <ul>
+        <li><strong>API Configuration Tab (<code>Settings1</code>):</strong>
+            <ul>
+                <li><strong>Purpose:</strong> Allows you to configure your Gemini API key.</li>
+                <li><strong>Gemini API Key Input:</strong> A text input field where you can paste your Gemini API key. This key is used for all communication with the Gemini API.</li>
+                <li><strong>Hardcoded API Key Display:</strong> Indicates if a hardcoded API key is present in the application's source code and shows its first few characters. If you enter a key in the input field, it overrides the hardcoded value for the current session.</li>
+            </ul>
+        </li>
+    </ul>
+
+    <h2 id="footer">VI. Footer</h2>
+    <p>The footer is a one-row high, black bar docked to the bottom of the screen.</p>
+    <ul>
+        <li><strong>Copyright:</strong> Displays a copyright notice (e.g., "© 2025 My Web App. All rights reserved.").</li>
+        <li><strong>Documentation Link:</strong> A placeholder link for application documentation (currently <code>documentation.html</code>).</li>
+        <li><strong>AI Studios Link:</strong> A link to the Google AI Studios website.</li>
+        <li><strong>Created by Elton Boehnen:</strong> A credit to the creator of the application.</li>
+    </ul>
+
+</body>
+</html>
